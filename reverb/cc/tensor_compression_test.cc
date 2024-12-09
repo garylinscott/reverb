@@ -36,7 +36,6 @@ namespace reverb {
 namespace {
 
 using ::testing::HasSubstr;
-// using ::testing::status::StatusIs;
 
 MATCHER_P2(StatusIs, code, message, "") {
   return arg.code() == code && absl::StrContains(arg.message(), message);

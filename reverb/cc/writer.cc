@@ -34,8 +34,6 @@
 #include "absl/synchronization/mutex.h"
 #include "absl/types/optional.h"
 #include "grpcpp/impl/codegen/client_context.h"
-// #include "third_party/grpc/include/grpcpp/client_context.h"
-// #include "third_party/grpc/include/grpcpp/impl/call_op_set.h"
 #include "reverb/cc/platform/hash_set.h"
 #include "reverb/cc/platform/logging.h"
 #include "reverb/cc/platform/status_macros.h"
