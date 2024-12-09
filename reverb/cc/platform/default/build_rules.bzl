@@ -567,6 +567,7 @@ def reverb_absl_deps():
         "@com_google_absl//absl/base",
         "@com_google_absl//absl/base:core_headers",
         "@com_google_absl//absl/functional:bind_front",
+        "@com_google_absl//absl/log:check",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/numeric:int128",
         "@com_google_absl//absl/random",

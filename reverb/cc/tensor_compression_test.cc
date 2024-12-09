@@ -19,6 +19,7 @@
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "absl/status/status.h"
+#include "reverb/cc/platform/status_matchers.h"
 #include "reverb/cc/testing/tensor_testutil.h"
 #include "tensorflow/core/framework/register_types.h"
 #include "tensorflow/core/framework/tensor.h"
@@ -28,13 +29,17 @@
 #include "tensorflow/core/framework/types.pb.h"
 #include "tensorflow/core/framework/variant.h"
 #include "tensorflow/core/platform/tstring.h"
+#include "tensorflow/core/framework/variant_encode_decode.h"
 
 namespace deepmind {
 namespace reverb {
 namespace {
 
 using ::testing::HasSubstr;
-using ::testing::status::StatusIs;
+
+MATCHER_P2(StatusIs, code, message, "") {
+  return arg.code() == code && absl::StrContains(arg.message(), message);
+}
 
 template <typename T>
 void EncodeMatchesDecodeT() {
@@ -75,9 +80,9 @@ TEST(TensorCompressionTest, StringTensor) {
   tensor.flat<tensorflow::tstring>()(1) = "world";
 
   tensorflow::TensorProto proto;
-  ASSERT_OK(CompressTensorAsProto(tensor, &proto));
+  REVERB_ASSERT_OK(CompressTensorAsProto(tensor, &proto));
 
-  ASSERT_OK_AND_ASSIGN(tensorflow::Tensor result,
+  TF_ASSERT_OK_AND_ASSIGN(tensorflow::Tensor result,
                        DecompressTensorFromProto(proto));
   test::ExpectTensorEqual<tensorflow::tstring>(tensor, result);
 }
@@ -88,9 +93,9 @@ TEST(TensorCompressionTest, NonStringTensor) {
   tensor.flat<int>().setRandom();
 
   tensorflow::TensorProto proto;
-  ASSERT_OK(CompressTensorAsProto(tensor, &proto));
+  REVERB_ASSERT_OK(CompressTensorAsProto(tensor, &proto));
 
-  ASSERT_OK_AND_ASSIGN(tensorflow::Tensor result,
+  TF_ASSERT_OK_AND_ASSIGN(tensorflow::Tensor result,
                        DecompressTensorFromProto(proto));
   test::ExpectTensorEqual<int>(tensor, result);
 }
@@ -101,9 +106,9 @@ TEST(TensorCompressionTest, NonStringTensorWithDeltaEncoding) {
   tensor.flat<int>().setRandom();
 
   tensorflow::TensorProto proto;
-  ASSERT_OK(CompressTensorAsProto(DeltaEncode(tensor, true), &proto));
+  REVERB_ASSERT_OK(CompressTensorAsProto(DeltaEncode(tensor, true), &proto));
 
-  ASSERT_OK_AND_ASSIGN(tensorflow::Tensor result,
+  TF_ASSERT_OK_AND_ASSIGN(tensorflow::Tensor result,
                        DecompressTensorFromProto(proto));
   test::ExpectTensorEqual<int>(tensor, DeltaEncode(result, false));
 }
@@ -120,16 +125,16 @@ TEST(TensorCompressionTest, CompressingVariantNotSupported) {
   tensorflow::TensorProto proto;
   EXPECT_THAT(CompressTensorAsProto(DeltaEncode(tensor, true), &proto),
               StatusIs(absl::StatusCode::kInvalidArgument,
-                       HasSubstr("variant is not supported")));
+                       "variant is not supported"));
 }
 
 TEST(TensorCompressionTest, DecompressingVariantNotSupported) {
   tensorflow::TensorProto proto;
   proto.set_dtype(tensorflow::DT_VARIANT);
 
-  EXPECT_THAT(DecompressTensorFromProto(proto),
+  EXPECT_THAT(DecompressTensorFromProto(proto).status(),
               StatusIs(absl::StatusCode::kInvalidArgument,
-                       HasSubstr("variant is not supported")));
+                       "variant is not supported"));
 }
 
 }  // namespace

@@ -67,7 +67,7 @@ reverb_cc_test(
     deps = [
         ":tensor_compression",
         "//reverb/cc/testing:tensor_testutil",
-        "//third_party/absl/status",
+        "//reverb/cc/platform:status_matchers",
     ] + reverb_tf_deps(),
 )
 
@@ -88,8 +88,6 @@ reverb_cc_test(
         "//reverb/cc/testing:proto_test_util",
         "//reverb/cc/testing:tensor_testutil",
         "//reverb/cc/testing:time_testutil",
-        "//third_party/absl/log:check",
-        "//third_party/grpc:grpc++",
     ] + reverb_tf_deps() + reverb_grpc_deps() + reverb_absl_deps(),
 )
 
@@ -191,10 +189,6 @@ reverb_cc_library(
     deps = [
         "//reverb/cc/platform:logging",
         "//reverb/cc/platform:snappy",
-        "//third_party/absl/status",
-        "//third_party/absl/status:statusor",
-        "//third_party/absl/strings",
-        "//third_party/tensorflow/tsl/platform:status",
     ] + reverb_tf_deps(),
 )
 
@@ -241,8 +235,6 @@ reverb_cc_library(
         "//reverb/cc/support:signature",
         "//reverb/cc/support:tf_util",
         "//reverb/cc/support:trajectory_util",
-        "//third_party/absl/log:check",
-        "//third_party/grpc:grpc++",
     ] + reverb_tf_deps() + reverb_grpc_deps() + reverb_absl_deps(),
 )
 

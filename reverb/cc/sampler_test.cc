@@ -35,9 +35,6 @@
 #include "absl/synchronization/mutex.h"
 #include "absl/time/clock.h"
 #include "absl/time/time.h"
-#include "third_party/grpc/include/grpcpp/client_context.h"
-#include "third_party/grpc/include/grpcpp/impl/call_op_set.h"
-#include "third_party/grpc/include/grpcpp/support/sync_stream.h"
 #include "reverb/cc/chunk_store.h"
 #include "reverb/cc/platform/logging.h"
 #include "reverb/cc/platform/status_matchers.h"
@@ -703,7 +700,7 @@ TEST(GrpcSamplerTest, GetNextTimestepReturnsErrorIfNotDecomposible) {
   auto* entry = response.mutable_entries(0);
 
   // Add a column of length 10 to the existing one of length 5.
-  ASSERT_OK(CompressTensorAsProto(
+  REVERB_ASSERT_OK(CompressTensorAsProto(
       MakeTensor(10), entry->add_data()->mutable_data()->add_tensors()));
   auto* slice = entry->mutable_info()
                     ->mutable_item()
